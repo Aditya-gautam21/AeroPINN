@@ -25,7 +25,7 @@ def train(
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
 
-    # ── Load & normalise ──────────────────────────────────────────────────────
+    # ── Load & normalise ──
     X_np, Y_np, stats = load_dataset(data_root, split=split, max_simulations=max_simulations)
 
     X_mean = torch.tensor(stats["X_mean"], dtype=torch.float32, device=device)
@@ -38,7 +38,7 @@ def train(
 
     N = X.shape[0]
 
-    # ── Model ─────────────────────────────────────────────────────────────────
+    # ── Model ──
     model = PINN(fourier_embed_dim=64, fourier_scale=1.0, width=256, depth=6).to(device)
     print(f"Parameters: {sum(p.numel() for p in model.parameters()):,}")
 
@@ -48,7 +48,7 @@ def train(
     Path(checkpoint_dir).mkdir(exist_ok=True)
     best_loss = float("inf")
 
-    # ── Training loop ─────────────────────────────────────────────────────────
+    # ── Training loop ──
     for epoch in range(1, epochs + 1):
         idx = torch.randint(0, N, (batch_size,), device=device)
         X_batch = X[idx]
@@ -90,7 +90,7 @@ if __name__ == "__main__":
     train(
         data_root="data",
         split="full_train",
-        max_simulations=5,      # start small; remove for full training
+        max_simulations=5,
         epochs=10000,
         batch_size=4096,
         lr=1e-3,
